@@ -14,17 +14,8 @@ st.set_page_config(page_title="LinguisticAtlas", layout="wide")
 # --- Resource Loading (Suggestion 1: Robust Deployment Loading) ---
 @st.cache_resource
 def load_models():
-    model_name = "en_core_web_sm"
-    try:
-        # Check if the model is already installed
-        nlp = spacy.load(model_name)
-    except OSError:
-        # If not found, download it automatically on the server
-        st.write(f"Downloading {model_name} for the first time...")
-        os.system(f"python -m spacy download {model_name}")
-        nlp = spacy.load(model_name)
-    
-    # Load embedding model for semantic analysis
+    # Since it's in requirements.txt, it will be pre-installed
+    nlp = spacy.load("en_core_web_sm")
     embed_model = SentenceTransformer('all-MiniLM-L6-v2')
     return nlp, embed_model
 
