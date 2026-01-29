@@ -11,11 +11,18 @@ from collections import Counter
 # --- Page Config ---
 st.set_page_config(page_title="LinguisticAtlas", layout="wide")
 
-# --- Resource Loading (Suggestion 1: Robust Deployment Loading) ---
+# --- Resource Loading with automatic model download ---
 @st.cache_resource
 def load_models():
-    # Since it's in requirements.txt, it will be pre-installed
-    nlp = spacy.load("en_core_web_sm")
+    # Try to load the model, download if not available
+    try:
+        nlp = spacy.load("en_core_web_sm")
+    except OSError:
+        # Model not found, download it
+        import subprocess
+        subprocess.run(["python", "-m", "spacy", "download", "en_core_web_sm"], check=True)
+        nlp = spacy.load("en_core_web_sm")
+    
     embed_model = SentenceTransformer('all-MiniLM-L6-v2')
     return nlp, embed_model
 
@@ -32,7 +39,7 @@ def get_data():
 nlp, embed_model = load_models()
 df = get_data()
 
-# --- Sidebar Navigation (Suggestion 2: Aligned Navigation Logic) ---
+# --- Sidebar Navigation ---
 st.sidebar.title("🔍 LinguisticAtlas") 
 st.sidebar.markdown("**An Interactive Instrument for Systematic Linguistic Data Analysis.**")
 st.sidebar.divider()
